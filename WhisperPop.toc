@@ -1,4 +1,4 @@
-## Interface: 110002, 40400, 11503
+## Interface: 110100, 40402, 30404, 11506
 ## Title: WhisperPop
 ## Author: Abin
 ## Version: @project-version@
