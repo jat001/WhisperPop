@@ -91,6 +91,10 @@ addon:RegisterOptionCallback("notifyButton", function(value)
 	end
 end)
 
+addon:RegisterOptionCallback("locked", function(value)
+	button.locked = value
+end)
+
 addon:RegisterOptionCallback("buttonScale", function(value)
 	button:SetScale(value / 100)
 end)

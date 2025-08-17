@@ -266,6 +266,7 @@ addon.DB_DEFAULTS = {
 	sound = 1,
 	save = 1,
 	notifyButton = 1,
+	locked = 0,
 	ignoreTags = 1,
 	applyFilters = 1,
 	receiveOnly = 0,
@@ -517,7 +518,9 @@ function addon:LoadPosition(f)
 end
 
 local function Move_OnDragStart(self)
-	self:StartMoving()
+	if not self.locked then
+		self:StartMoving()
+	end
 end
 
 local function Move_OnDragStop(self)
