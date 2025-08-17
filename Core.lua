@@ -177,6 +177,17 @@ function addon:GetNewMessage()
 	end
 end
 
+function addon:ClearAllNews()
+	for i = 1, #self.db.history do
+		local data = self.db.history[i]
+		if data.new then
+			data.new = nil
+		end
+	end
+
+	self:BroadcastEvent("OnListUpdate")
+end
+
 function addon:GetNewNames()
 	local newNames = {}
 	for i = 1, #self.db.history do
