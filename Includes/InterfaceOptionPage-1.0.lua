@@ -292,7 +292,7 @@ local function CheckButton_Text_OnSetText(self)
 end
 
 local function CheckButton_OnEnable(self)
-	self.text:SetTextColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+	self.text:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
 end
 
 local function CheckButton_OnDisable(self)
