@@ -22,8 +22,9 @@ local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 local BNGetNumFriends = BNGetNumFriends
 local GMChatFrame_IsGM = GMChatFrame_IsGM
 local ChatFrame_GetMessageEventFilters = ChatFrame_GetMessageEventFilters
-local ChatFrame_SendTell = ChatFrame_SendTell
-local ChatFrame_SendBNetTell = ChatFrame_SendBNetTell
+local ChatFrame_SendTell = ChatFrame_SendTell or ChatFrameUtil.SendTell
+local ChatFrame_SendBNetTell = ChatFrame_SendBNetTell or ChatFrameUtil.SendBNetTell
+local ChatFrame_OpenChat = ChatFrame_OpenChat or ChatFrameUtil.OpenChat
 local SendWho = C_FriendList.SendWho
 local InviteUnit = C_PartyInfo and C_PartyInfo.InviteUnit or InviteUnit
 local FriendsFrame_ShowDropdown = FriendsFrame_ShowDropdown
@@ -449,13 +450,18 @@ function addon:CHAT_MSG_WHISPER(...)
 	else
 		-- Spam filters only applied on incoming non-GM whispers, other cases make no sense
 		if self.db.applyFilters then
-			local filtersList = ChatFrame_GetMessageEventFilters("CHAT_MSG_WHISPER")
-			if filtersList then
-				local _, func
-				for _, func in ipairs(filtersList) do
-					if type(func) == "function" and func(DEFAULT_CHAT_FRAME, "CHAT_MSG_WHISPER", ...) then
-						return
+			if ChatFrame_GetMessageEventFilters then
+				local filtersList = ChatFrame_GetMessageEventFilters("CHAT_MSG_WHISPER")
+				if filtersList then
+					for _, func in ipairs(filtersList) do
+						if type(func) == "function" and func(DEFAULT_CHAT_FRAME, "CHAT_MSG_WHISPER", ...) then
+							return
+						end
 					end
+				end
+			elseif ChatFrameUtil and ChatFrameUtil.ProcessMessageEventFilters then
+				if ChatFrameUtil.ProcessMessageEventFilters(DEFAULT_CHAT_FRAME, "CHAT_MSG_WHISPER", ...) then
+					return
 				end
 			end
 		end

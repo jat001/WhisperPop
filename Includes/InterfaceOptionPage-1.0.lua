@@ -929,31 +929,6 @@ local function EditBox_OnEscapePressed(self)
 	self:ClearFocus()
 end
 
-hooksecurefunc("ChatEdit_InsertLink", function(link)
-	if type(link) ~= "string" then
-		return
-	end
-
-	local editBox = GetCurrentKeyBoardFocus()
-	if not editBox then
-		return
-	end
-
-	local handleClick = editBox.handleClick
-	if type(handleClick) ~= "string" then
-		return
-	end
-
-	handleClick = strlower(handleClick)
-
-	if handleClick == "link" then
-		editBox:SetText(link)
-	elseif handleClick == "name" then
-		local name = strmatch(link, "%[(.+)%]")
-		editBox:SetText(name or link)
-	end
-end)
-
 local function CreateEditBox(self, text, horizontal, disableInCombat, textColor)
 	local editbox = CreateSubControl(self, "EditBox", nil, "BackdropTemplate", disableInCombat)
 	editbox:SetAutoFocus(false)
