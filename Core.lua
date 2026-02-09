@@ -371,6 +371,10 @@ function addon:Delete(name)
 end
 
 function addon:ProcessChatMsg(name, class, text, inform, bnid)
+	if issecretvalue and issecretvalue(text) then
+		return
+	end
+
 	if type(text) ~= "string" or type(name) ~= "string" then
 		return
 	end
