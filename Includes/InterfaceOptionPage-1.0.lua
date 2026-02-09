@@ -110,19 +110,19 @@ local strmatch = strmatch
 local _G = _G
 local UISpecialFrames = UISpecialFrames
 
-local InterfaceOptions_AddCategory = InterfaceOptions_AddCategory or function(frame, addOn, position)
+local InterfaceOptions_AddCategory = InterfaceOptions_AddCategory or function(frame)
 	frame.OnCommit = frame.okay
 	frame.OnDefault = frame.default
 	frame.OnRefresh = frame.refresh
 
 	if frame.parent then
-		local category = Settings.GetCategory(frame.parent)
-		local subcategory = Settings.RegisterCanvasLayoutSubcategory(category, frame, frame.name, frame.name)
-		subcategory.ID = frame.name
+		local category = Settings.GetCategory(frame.parent.categoryID)
+		local subcategory = Settings.RegisterCanvasLayoutSubcategory(category, frame, frame.name)
+		frame.categoryID = subcategory.ID
 		return subcategory, category
 	else
-		local category = Settings.RegisterCanvasLayoutCategory(frame, frame.name, frame.name)
-		category.ID = frame.name
+		local category = Settings.RegisterCanvasLayoutCategory(frame, frame.name)
+		frame.categoryID = category.ID
 		Settings.RegisterAddOnCategory(category)
 		return category
 	end
@@ -130,7 +130,7 @@ end
 
 local InterfaceOptionsFrame_OpenToCategory = InterfaceOptionsFrame_OpenToCategory or function(categoryIDOrFrame)
 	if type(categoryIDOrFrame) == "table" then
-		local categoryID = categoryIDOrFrame.name
+		local categoryID = categoryIDOrFrame.categoryID
 		return Settings.OpenToCategory(categoryID)
 	else
 		return Settings.OpenToCategory(categoryIDOrFrame)
