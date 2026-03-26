@@ -19,7 +19,12 @@ local L = addon.L
 BINDING_HEADER_WHISPERPOP_TITLE = "WhisperPop"
 BINDING_NAME_WHISPERPOP_TOGGLE = L["toggle frame"]
 
-local configButton = addon.templates.CreateIconButton(addon.frame:GetName().."Config", addon.frame, "Interface\\Icons\\Trade_Engineering", 16)
+local configButton = addon.templates.CreateIconButton(
+	addon.frame:GetName() .. "Config",
+	addon.frame,
+	"Interface\\Icons\\Trade_Engineering",
+	16
+)
 configButton:SetPoint("TOPLEFT", 11, -9)
 
 configButton:SetScript("OnEnter", function(self)
@@ -55,9 +60,13 @@ local lockCheck = generalGroup:AddButton(L["lock button position"], "locked")
 lockCheck:ClearAllPoints()
 lockCheck:SetPoint("TOPLEFT", notifyCheck, "BOTTOMLEFT", lockCheck:GetWidth(), 0)
 
+local alignCheck = generalGroup:AddButton(L["align chat button"], "alignChat")
+alignCheck:ClearAllPoints()
+alignCheck:SetPoint("TOPLEFT", lockCheck, "BOTTOMLEFT", 0, 0)
+
 local receiveCheck = generalGroup:AddButton(L["receive only"], "receiveOnly")
 receiveCheck:ClearAllPoints()
-receiveCheck:SetPoint("TOPLEFT", lockCheck, "BOTTOMLEFT", -lockCheck:GetWidth(), 0)
+receiveCheck:SetPoint("TOPLEFT", alignCheck, "BOTTOMLEFT", -alignCheck:GetWidth(), 0)
 
 generalGroup:AddButton(L["sound notify"], "sound")
 
@@ -90,9 +99,23 @@ end
 
 addon:RegisterOptionCallback("notifyButton", function(value)
 	if value then
-		lockCheck:Enable()
+		if not addon.db["alignChat"] and not alignCheck:GetChecked() then
+			lockCheck:Enable()
+		end
+		alignCheck:Enable()
 	else
 		lockCheck:Disable()
+		alignCheck:Disable()
+	end
+end)
+
+addon:RegisterOptionCallback("alignChat", function(value)
+	if value then
+		lockCheck:Disable()
+		lockCheck:SetChecked(true)
+		addon.db["locked"] = true
+	else
+		lockCheck:Enable()
 	end
 end)
 

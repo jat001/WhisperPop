@@ -30,6 +30,7 @@ addon.L = {
 	["settings tooltip 2"] = "|cff00ff00Shift-点击：|r清空所有已保存的聊天记录",
 	["show notify button"] = "显示屏幕提示按钮",
 	["lock button position"] = "锁定按钮位置",
+	["align chat button"] = "对齐聊天按钮",
 	["delete player records"] = "删除所有来自|cff00ff00%s|r的记录",
 	["filter settings"] = "过滤设置",
 	["ignore tag messages"] = "不保存标签类消息（以 |cff00ff00<|r 或 |cff00ff00[|r 开头的）",

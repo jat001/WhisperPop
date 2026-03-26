@@ -33,27 +33,32 @@ local DEFAULT_CHAT_FRAME = DEFAULT_CHAT_FRAME
 
 local function getDeprecatedAccountInfo(accountInfo)
 	if accountInfo then
-		local clientProgram = accountInfo.gameAccountInfo.clientProgram ~= "" and accountInfo.gameAccountInfo.clientProgram or nil
+		local clientProgram =
+			accountInfo.gameAccountInfo.clientProgram ~= "" and
+			accountInfo.gameAccountInfo.clientProgram or nil
 		return
-			accountInfo.bnetAccountID, accountInfo.accountName, accountInfo.battleTag, accountInfo.isBattleTagFriend,
-			accountInfo.gameAccountInfo.characterName, accountInfo.gameAccountInfo.gameAccountID, clientProgram,
-			accountInfo.gameAccountInfo.isOnline, accountInfo.lastOnlineTime, accountInfo.isAFK, accountInfo.isDND, accountInfo.customMessage, accountInfo.note, accountInfo.isFriend,
-			accountInfo.customMessageTime, false, accountInfo.rafLinkType == Enum.RafLinkType.Recruit, accountInfo.gameAccountInfo.canSummon
+			accountInfo.bnetAccountID, accountInfo.accountName, accountInfo.battleTag,
+			accountInfo.isBattleTagFriend, accountInfo.gameAccountInfo.characterName,
+			accountInfo.gameAccountInfo.gameAccountID, clientProgram,
+			accountInfo.gameAccountInfo.isOnline, accountInfo.lastOnlineTime,
+			accountInfo.isAFK, accountInfo.isDND, accountInfo.customMessage, accountInfo.note,
+			accountInfo.isFriend, accountInfo.customMessageTime, false, accountInfo.rafLinkType ==
+			Enum.RafLinkType.Recruit, accountInfo.gameAccountInfo.canSummon
 	end
 end
 
-local BNGetFriendInfo = BNGetFriendInfo or function(friendIndex)
+local BNGetFriendInfo     = BNGetFriendInfo or function(friendIndex)
 	local accountInfo = C_BattleNet.GetFriendAccountInfo(friendIndex)
 	return getDeprecatedAccountInfo(accountInfo)
 end
 
-local BNGetFriendInfoByID  = BNGetFriendInfoByID or function(id)
+local BNGetFriendInfoByID = BNGetFriendInfoByID or function(id)
 	local accountInfo = C_BattleNet.GetAccountInfoByID(id)
 	return getDeprecatedAccountInfo(accountInfo)
 end
 
-local addon = LibAddonManager:CreateAddon(...)
-local L = addon.L
+local addon               = LibAddonManager:CreateAddon(...)
+local L                   = addon.L
 
 addon:RegisterDB("WhisperPopDB")
 addon:RegisterSlashCmd("whisperpop", "wp") -- Type /whisperpop or /wp to toggle the frame
@@ -93,7 +98,7 @@ end
 function addon:EncodeMessage(text, inform)
 	local timestamp = time()
 	local formattedTime = addon:GetFormattedTime(timestamp)
-	return (inform and "1" or "0")..format("[T%d]", timestamp)..(text or ""), formattedTime
+	return (inform and "1" or "0") .. format("[T%d]", timestamp) .. (text or ""), formattedTime
 end
 
 function addon:DecodeMessage(line)
@@ -247,19 +252,16 @@ function addon:HandleAction(name, action)
 			FriendsFrame_ShowDropdown(name, 1)
 			addon.currentName = name
 		end
-
 	elseif action == "WHO" then
 		if not bnId then
-			SendWho(WHO_TAG_EXACT..name)
+			SendWho(WHO_TAG_EXACT .. name)
 		end
-
 	elseif action == "INVITE" then
 		if bnId and bnIndex then
 			self:BattlenetInvite(bnId, bnIndex)
 		else
 			InviteUnit(name)
 		end
-
 	elseif action == "WHISPER" then
 		if bnName then
 			ChatFrame_SendBNetTell(bnName)
@@ -278,7 +280,8 @@ addon.DB_DEFAULTS = {
 	sound = 1,
 	save = 1,
 	notifyButton = 1,
-	locked = 0,
+	locked = 1,
+	alignChat = 1,
 	ignoreTags = 1,
 	applyFilters = 1,
 	receiveOnly = 0,
@@ -299,7 +302,7 @@ function addon:OnInitialize(db, firstTime)
 				db[k] = 1
 			elseif type(v) == "table" then
 				-- print(k, db[k])
-				if type(db[k]) ~= "number"  or db[k] < v.min or db[k] > v.max then
+				if type(db[k]) ~= "number" or db[k] < v.min or db[k] > v.max then
 					db[k] = v.default
 				end
 			end
@@ -399,7 +402,7 @@ function addon:ProcessChatMsg(name, class, text, inform, bnid)
 	elseif class ~= "GM" then
 		local _, realm = self:ParseNameRealm(name)
 		if not realm then
-			name = name.."-"..self.normalizedRealm
+			name = name .. "-" .. self.normalizedRealm
 		end
 	end
 
@@ -508,15 +511,16 @@ function addon:Round(number, idp)
 end
 
 function addon:SavePosition(f)
-	local orig, _, tar, x, y = f:GetPoint()
+	local orig, rela, tar, x, y = f:GetPoint()
+	rela = rela:GetName()
 	x = self:Round(x, 2)
 	y = self:Round(y, 2)
 
 	local db = self.db
 	local key = f.key or f:GetName()
-	db.positions[key] = {orig, "UIParent", tar, x, y}
+	db.positions[key] = { orig, rela, tar, x, y }
 	f:ClearAllPoints()
-	f:SetPoint(orig, "UIParent", tar, x, y)
+	f:SetPoint(orig, rela, tar, x, y)
 end
 
 function addon:LoadPosition(f)
@@ -539,12 +543,14 @@ function addon:LoadPosition(f)
 end
 
 local function Move_OnDragStart(self)
-	if not self.locked then
-		self:StartMoving()
-	end
+	if self.locked then return end
+
+	self:StartMoving()
 end
 
 local function Move_OnDragStop(self)
+	if self.locked then return end
+
 	self:StopMovingOrSizing()
 	addon:SavePosition(self)
 

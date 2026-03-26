@@ -28,6 +28,7 @@ addon.L = {
 	["settings tooltip 2"] = "|cff00ff00Shift-click:|r Clear all saved messages",
 	["show notify button"] = "Show screen notify button",
 	["lock button position"] = "Lock button position",
+	["align chat button"] = "Align chat button",
 	["delete player records"] = "Delete all messages from |cff00ff00%s|r",
 	["filter settings"] = "Filter settings",
 	["ignore tag messages"] = "Ignore tag messages (start with |cff00ff00<|r or |cff00ff00[|r)",

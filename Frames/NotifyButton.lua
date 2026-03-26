@@ -22,10 +22,10 @@ addon.frame:HookScript("OnHide", function()
 	button:SetChecked(false)
 end)
 
-button.defaultPos = {"CENTER", 0, 160}
+button.defaultPos = { "CENTER", 0, 160 }
 button.icon:SetDesaturated(true)
 
-button.text = button:CreateFontString(button:GetName().."Text", "ARTWORK", "GameFontGreenSmall")
+button.text = button:CreateFontString(button:GetName() .. "Text", "ARTWORK", "GameFontGreenSmall")
 button.text:SetPoint("LEFT", button, "RIGHT", 2, 0)
 button.text:SetFont(STANDARD_TEXT_FONT, 13, "")
 
@@ -98,6 +98,21 @@ end)
 
 addon:RegisterOptionCallback("locked", function(value)
 	button.locked = value
+end)
+
+addon:RegisterOptionCallback("alignChat", function(value)
+	button:ClearAllPoints()
+
+	local chatMenu = _G["ChatFrameMenuButton"]
+	local chatChannel = _G["ChatFrameChannelButton"]
+	if value and chatMenu and chatChannel then
+		local y = chatMenu:GetBottom() - chatChannel:GetTop()
+		button:SetPoint("BOTTOMLEFT", chatMenu, "TOPLEFT", 0, y)
+	else
+		button:SetPoint(unpack(button.defaultPos))
+	end
+
+	addon:SavePosition(button)
 end)
 
 addon:RegisterOptionCallback("buttonScale", function(value)
